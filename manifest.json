@@ -1,14 +1,14 @@
 {
-  "name": "Altın & Döviz Kurları",
-  "short_name": "AltınDöviz",
-  "description": "Altın ve döviz kurlarını takip et",
-  "start_url": "/",
+  "name": "Fiyat Takip",
+  "short_name": "Fiyat",
+  "start_url": "/fgoldprices.github.io/index.html",
+  "scope": "/fgoldprices.github.io/",
   "display": "standalone",
-  "background_color": "#f8f9fa",
-  "theme_color": "#0c66b4",
+  "background_color": "#121212",
+  "theme_color": "#121212",
   "icons": [
     {
-      "src": "icon-512.png",
+      "src": "/fgoldprices.github.io/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
