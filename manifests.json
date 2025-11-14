@@ -1,0 +1,16 @@
+{
+  "name": "Altın & Döviz Kurları",
+  "short_name": "AltınDöviz",
+  "description": "Altın ve döviz kurlarını takip et",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#0c66b4",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
