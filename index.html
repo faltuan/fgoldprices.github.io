@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Altın & Döviz Kurları</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg: #fff;
+            --border-color: #dee2e6;
+            --buy-color: #28a745;
+            --sell-color: #dc3545;
+            --neutral-color: #6c757d;
+            --primary-color: #0c66b4;
+            --bs-nav-tabs-border-color: #333;
+            --bs-nav-tabs-link-active-border-color:#333;
+
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1f1f1f;
+            --border-color: #333;
+            --buy-color: #4cd137;
+            --sell-color: #e84118;
+            --neutral-color: #888;
+            --primary-color: #002a79;
+             --bs-nav-tabs-border-color: #333 ;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .price-box {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+ 
+        .price-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+        }
+
+        .price-label {
+            color: var(--neutral-color);
+            font-size: 0.85rem;
+        }
+
+        .price-buy {
+            color: var(--buy-color);
+            font-weight: 600;
+        }
+
+        .price-sell {
+            color: var(--sell-color);
+            font-weight: 600;
+        }
+
+        .no-price {
+            color: var(--neutral-color);
+            font-weight: 600;
+        }
+
+        .change-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .change-positive {
+            background-color: rgba(76, 209, 55, 0.2);
+            color: var(--buy-color);
+        }
+
+        .change-negative {
+            background-color: rgba(232, 65, 24, 0.2);
+            color: var(--sell-color);
+        }
+
+        .change-neutral {
+            background-color: rgba(108, 117, 125, 0.2);
+            color: var(--neutral-color);
+        }
+
+        .grid-col {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        .list-col {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        @media (min-width:768px) {
+            .grid-col {
+                flex: 0 0 33.33%;
+                max-width: 33.33%;
+            }
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: #fff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+
+        .price-box.editing .remove-btn {
+            display: block;
+        }
+
+        [data-theme="dark"] .remove-btn {
+            color: #fff;
+        }
+
+        [data-theme="light"] .remove-btn {
+            color: red;
+        }
+
+        .search-modal .modal-content {
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+       /* Tab stili */
+.nav-tabs {
+    border-bottom: 2px solid var(--border-color) ;
+    border-color:#333 !important;
+      --bs-nav-tabs-link-active-border-color: var(--border-color);
+       --bs-nav-tabs-border-color: var(--border-color)
+}
+ 
+/* Eğer dark tema varsa ekstra */
+[data-theme="dark"] .nav-tabs {
+    --bs-nav-tabs-border-color: #333; /* dark tema gri/siyah border */
+    --bs-nav-tabs-link-active-border-color: #333; /* aktif tab alt border dark temaya uyumlu */
+}
+.nav-tabs .nav-link {
+    border: 1px solid transparent; /* kenar çizgileri kaldırmak için transparent */
+    border-bottom: none; /* alt sınırı tabın kendisi değil nav-tabs container gösteriyor */
+    border-radius: 12px 12px 0 0;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    margin-right: 4px;
+    transition: 0.2s;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--primary-color);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.nav-tabs .nav-link:hover:not(.active) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .nav-tabs .nav-link.active {
+    background-color: var(--primary-color);
+    color: #8fbfe7;
+}
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <div class="container my-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+            <h3>Altın & Döviz</h3>
+            <div class="d-flex gap-2 justify-content-center align-items-center flex-wrap">
+                
+                <span class="time" id="currentTime"></span>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                        data-bs-toggle="dropdown">Ayarlar</button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" id="themeToggle">Dark/Light</a></li>
+                        <li><a class="dropdown-item" href="#" id="viewToggle">Grid/List</a></li>
+                    </ul>
+                </div>
+                <button class="btn btn-outline-primary btn-sm" id="editToggle">Düzenle</button>
+
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-2" id="tabs" role="tablist">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
+                    data-bs-target="#custom">Kişiselleştirilmiş</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab"
+                    data-bs-target="#currency">Dövizler</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#gold">Altınlar</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="custom">
+                <div class="row g-3 mt-2" id="customContainer"></div>
+            </div>
+            <div class="tab-pane fade" id="currency">
+                <div class="row g-3 mt-2" id="currencyContainer"></div>
+            </div>
+            <div class="tab-pane fade" id="gold">
+                <div class="row g-3 mt-2" id="goldContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB -->
+    <div class="fab" id="addFab">+</div>
+
+    <!-- Modal -->
+    <div class="modal fade search-modal" id="addModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content p-3">
+                <h5>Kur Ekle</h5>
+                <input type="text" id="searchInput" class="form-control mb-2" placeholder="Ara...">
+                <div class="list-group" id="modalList" style="max-height:300px; overflow-y:auto;"></div>
+                <button class="btn btn-secondary mt-2" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const goldAPI = 'https://finance.truncgil.com/api/gold-rates';
+        const currencyAPI = 'https://finance.truncgil.com/api/currency-rates';
+
+        let rates = [], customRates = JSON.parse(localStorage.getItem('customRates') || '[]');
+        let viewMode = localStorage.getItem('viewMode') || 'grid';
+        let theme = localStorage.getItem('theme') || 'light';
+        let editMode = false;
+        document.body.setAttribute('data-theme', theme);
+        const diffColor = '#C6A700'; // tatlı sarı
+
+
+        let draggedKey = null;
+
+        function dragStart(e) {
+            draggedKey = e.currentTarget.dataset.key;
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function dropItem(e) {
+            e.preventDefault();
+            const targetEl = e.currentTarget;
+            const draggedEl = document.querySelector(`[data-key="${draggedKey}"]`);
+            if (draggedEl && targetEl && draggedEl !== targetEl) {
+                // customRates sırasını swap yap
+                const fromIndex = customRates.indexOf(draggedKey);
+                const toIndex = customRates.indexOf(targetEl.dataset.key);
+                [customRates[fromIndex], customRates[toIndex]] = [customRates[toIndex], customRates[fromIndex]];
+                localStorage.setItem('customRates', JSON.stringify(customRates));
+                updateAllTabs();
+            }
+        }
+
+
+        // Saat
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        function formatPrice(price) { return price !== null ? parseFloat(price).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '--'; }
+        function getChangeClass(change) { if (!change) return 'change-neutral'; const val = parseFloat(change); return val > 0 ? 'change-positive' : val < 0 ? 'change-negative' : 'change-neutral'; }
+
+        function renderRates(containerId, data) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            data.forEach(item => {
+                let colClass = viewMode === 'grid' ? 'grid-col' : 'list-col';
+
+                // Dünkü fiyat ve fark hesaplama
+                const buyYesterday = item.buying ? item.buying / (1 + item.change / 100) : null;
+                const buyDiff = item.buying && buyYesterday ? item.buying - buyYesterday : null;
+
+                const sellYesterday = item.selling ? item.selling / (1 + item.change / 100) : null;
+                const sellDiff = item.selling && sellYesterday ? item.selling - sellYesterday : null;
+
+                container.innerHTML += `
+        <div class="${colClass} mb-3" draggable="${editMode}" ondragstart="dragStart(event)" ondragover="allowDrop(event)" ondrop="dropItem(event)" data-key="${item.key}">
+            <div class="price-box ${editMode ? 'editing' : ''}" data-key="${item.key}">
+                <div class="remove-btn" onclick="removeCustom('${item.key}')">✖</div>
+                <div class="price-title">
+                    <span>${item.name}</span>
+                    <span class="change-badge ${getChangeClass(item.change)}">${item.change ? (item.change > 0 ? '+' : '') + item.change + '%' : '0%'}</span>
+                </div>
+                <div class="price-row">
+                    <div class="price-label">ALIŞ</div>
+                    <div class="${item.buying ? 'price-buy' : 'no-price'}">
+                        ${buyDiff !== null ? `<small style="color:${diffColor}; margin-right:5px">(${buyDiff >= 0 ? '+' : '-'}${formatPrice(Math.abs(buyDiff))}₺)</small>` : ''}
+                        ₺${formatPrice(item.buying)}
+                    </div>
+                </div>
+                <div class="price-row">
+                    <div class="price-label">SATIŞ</div>
+                    <div class="${item.selling ? 'price-sell' : 'no-price'}">
+                        ${sellDiff !== null ? `<small style="color:${diffColor}; margin-right:5px">(${sellDiff >= 0 ? '+' : '-'}${formatPrice(Math.abs(sellDiff))}₺)</small>` : ''}
+                        ₺${formatPrice(item.selling)}
+                       
+                    </div>
+                </div>
+            </div>
+        </div>`;
+            });
+        }
+
+        async function fetchRates() {
+            try {
+                const [goldResp, currencyResp] = await Promise.all([fetch(goldAPI).then(r => r.json()), fetch(currencyAPI).then(r => r.json())]);
+                rates = [];
+                // Altınlar
+                Object.entries(goldResp.Rates).forEach(([key, val]) => {
+                    if (val.Type === 'Gold') {
+                        rates.push({ key, name: val.Name || key, buying: val.Buying || null, selling: val.Selling || null, change: val.Change || 0, order: rates.length, type: 'gold' });
+                    }
+                });
+                // Döviz
+                Object.entries(currencyResp.Rates).forEach(([key, val]) => {
+                    rates.push({ key, name: val.Name || key, buying: val.Buying || null, selling: val.Selling || null, change: val.Change || 0, order: rates.length, type: 'currency' });
+                });
+                updateAllTabs();
+            } catch (e) { console.error(e); }
+        }
+        fetchRates();
+        setInterval(fetchRates, 30000);
+
+        function updateAllTabs() {
+            renderRates('customContainer', rates.filter(r => customRates.includes(r.key)));
+            renderRates('currencyContainer', rates.filter(r => r.type === 'currency'));
+            renderRates('goldContainer', rates.filter(r => r.type === 'gold'));
+        }
+
+        document.getElementById('viewToggle').addEventListener('click', () => {
+            viewMode = viewMode === 'grid' ? 'list' : 'grid';
+            localStorage.setItem('viewMode', viewMode);
+            updateAllTabs();
+        });
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            theme = theme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        });
+
+        document.getElementById('editToggle').addEventListener('click', () => {
+            editMode = !editMode;
+            updateAllTabs();
+        });
+
+        function removeCustom(key) {
+            customRates = customRates.filter(k => k !== key);
+            localStorage.setItem('customRates', JSON.stringify(customRates));
+            updateAllTabs();
+        }
+
+        // FAB ve Modal
+        const fab = document.getElementById('addFab');
+        const addModal = new bootstrap.Modal(document.getElementById('addModal'));
+        const modalList = document.getElementById('modalList');
+        const searchInput = document.getElementById('searchInput');
+
+        fab.addEventListener('click', () => {
+            addModal.show();
+            populateModalList('');
+        });
+        searchInput.addEventListener('input', (e) => {
+            populateModalList(e.target.value.toLowerCase());
+        });
+
+        function populateModalList(term) {
+            modalList.innerHTML = '';
+            rates.forEach(r => {
+                if (r.name.toLowerCase().includes(term)) {
+                    const item = document.createElement('button');
+                    item.className = 'list-group-item list-group-item-action';
+                    item.textContent = r.name;
+                    // Eğer zaten eklenmişse disabled
+                    if (customRates.includes(r.key)) {
+                        item.disabled = true;
+                        item.classList.add('disabled');
+                    } else {
+                        item.onclick = () => {
+                            customRates.push(r.key);
+                            localStorage.setItem('customRates', JSON.stringify(customRates));
+                            addModal.hide();
+                            updateAllTabs();
+                        };
+                    }
+                    modalList.appendChild(item);
+                }
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>
