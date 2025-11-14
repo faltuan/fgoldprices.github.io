@@ -1,6 +1,6 @@
 {
-  "name": "Fiyat Takip",
-  "short_name": "Fiyat",
+  "name": "Altın Döviz Fiyat Takip",
+  "short_name": "Altın Döviz Fiyatları",
   "start_url": "/fgoldprices.github.io/index.html",
   "scope": "/fgoldprices.github.io/",
   "display": "standalone",
