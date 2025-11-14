@@ -17,7 +17,7 @@
             --neutral-color: #6c757d;
             --primary-color: #0c66b4;
             --bs-nav-tabs-border-color: #333;
-            --bs-nav-tabs-link-active-border-color:#333;
+            --bs-nav-tabs-link-active-border-color: #333;
 
         }
 
@@ -30,7 +30,7 @@
             --sell-color: #e84118;
             --neutral-color: #888;
             --primary-color: #002a79;
-             --bs-nav-tabs-border-color: #333 ;
+            --bs-nav-tabs-border-color: #333;
         }
 
         body {
@@ -48,7 +48,7 @@
             position: relative;
         }
 
- 
+
         .price-title {
             font-weight: 600;
             font-size: 1rem;
@@ -167,48 +167,53 @@
             color: var(--text-color);
         }
 
-       /* Tab stili */
-.nav-tabs {
-    border-bottom: 2px solid var(--border-color) ;
-    border-color:#333 !important;
-      --bs-nav-tabs-link-active-border-color: var(--border-color);
-       --bs-nav-tabs-border-color: var(--border-color)
-}
- 
-/* Eğer dark tema varsa ekstra */
-[data-theme="dark"] .nav-tabs {
-    --bs-nav-tabs-border-color: #333; /* dark tema gri/siyah border */
-    --bs-nav-tabs-link-active-border-color: #333; /* aktif tab alt border dark temaya uyumlu */
-}
-.nav-tabs .nav-link {
-    border: 1px solid transparent; /* kenar çizgileri kaldırmak için transparent */
-    border-bottom: none; /* alt sınırı tabın kendisi değil nav-tabs container gösteriyor */
-    border-radius: 12px 12px 0 0;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    margin-right: 4px;
-    transition: 0.2s;
-}
+        /* Tab stili */
+        .nav-tabs {
+            border-bottom: 2px solid var(--border-color);
+            border-color: #333 !important;
+            --bs-nav-tabs-link-active-border-color: var(--border-color);
+            --bs-nav-tabs-border-color: var(--border-color)
+        }
 
-.nav-tabs .nav-link.active {
-    background-color: var(--primary-color);
-    color: #fff;
-    font-weight: 600;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
+        /* Eğer dark tema varsa ekstra */
+        [data-theme="dark"] .nav-tabs {
+            --bs-nav-tabs-border-color: #333;
+            /* dark tema gri/siyah border */
+            --bs-nav-tabs-link-active-border-color: #333;
+            /* aktif tab alt border dark temaya uyumlu */
+        }
 
-.nav-tabs .nav-link:hover:not(.active) {
-    background-color: rgba(0, 0, 0, 0.05);
-}
+        .nav-tabs .nav-link {
+            border: 1px solid transparent;
+            /* kenar çizgileri kaldırmak için transparent */
+            border-bottom: none;
+            /* alt sınırı tabın kendisi değil nav-tabs container gösteriyor */
+            border-radius: 12px 12px 0 0;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            margin-right: 4px;
+            transition: 0.2s;
+        }
 
-[data-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.1);
-}
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
 
-[data-theme="dark"] .nav-tabs .nav-link.active {
-    background-color: var(--primary-color);
-    color: #8fbfe7;
-}
+        .nav-tabs .nav-link:hover:not(.active) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: #8fbfe7;
+        }
     </style>
 </head>
 
@@ -218,7 +223,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
             <h3>Altın & Döviz</h3>
             <div class="d-flex gap-2 justify-content-center align-items-center flex-wrap">
-                
+
                 <span class="time" id="currentTime"></span>
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
@@ -226,6 +231,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#" id="themeToggle">Dark/Light</a></li>
                         <li><a class="dropdown-item" href="#" id="viewToggle">Grid/List</a></li>
+                        <a class="dropdown-item" href="#" id="toggleDiffTL">Farkı Göster/Gizle</a>
                     </ul>
                 </div>
                 <button class="btn btn-outline-primary btn-sm" id="editToggle">Düzenle</button>
@@ -288,24 +294,28 @@
 
         function dragStart(e) {
             draggedKey = e.currentTarget.dataset.key;
+            e.dataTransfer.effectAllowed = "move";
         }
 
         function allowDrop(e) {
             e.preventDefault();
         }
 
+
         function dropItem(e) {
             e.preventDefault();
             const targetEl = e.currentTarget;
-            const draggedEl = document.querySelector(`[data-key="${draggedKey}"]`);
-            if (draggedEl && targetEl && draggedEl !== targetEl) {
-                // customRates sırasını swap yap
-                const fromIndex = customRates.indexOf(draggedKey);
-                const toIndex = customRates.indexOf(targetEl.dataset.key);
-                [customRates[fromIndex], customRates[toIndex]] = [customRates[toIndex], customRates[fromIndex]];
-                localStorage.setItem('customRates', JSON.stringify(customRates));
-                updateAllTabs();
-            }
+            if (!draggedKey || !targetEl.dataset.key || draggedKey === targetEl.dataset.key) return;
+
+            const draggedIndex = customRates.indexOf(draggedKey);
+            const targetIndex = customRates.indexOf(targetEl.dataset.key);
+            if (draggedIndex < 0 || targetIndex < 0) return;
+
+            // Swap
+            [customRates[draggedIndex], customRates[targetIndex]] = [customRates[targetIndex], customRates[draggedIndex]];
+            localStorage.setItem('customRates', JSON.stringify(customRates));
+            updateAllTabs();
+            draggedKey = null;
         }
 
 
@@ -323,44 +333,65 @@
         function renderRates(containerId, data) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
+
+            // YENİ: Sadece 'customContainer'daysa düzenleme/sürükleme yapılabilir.
+            const isCustomTab = containerId === 'customContainer';
+
             data.forEach(item => {
                 let colClass = viewMode === 'grid' ? 'grid-col' : 'list-col';
 
-                // Dünkü fiyat ve fark hesaplama
+                // Dünkü fiyat ve fark hesaplama (Bu kısım aynı kalıyor)
                 const buyYesterday = item.buying ? item.buying / (1 + item.change / 100) : null;
                 const buyDiff = item.buying && buyYesterday ? item.buying - buyYesterday : null;
 
                 const sellYesterday = item.selling ? item.selling / (1 + item.change / 100) : null;
                 const sellDiff = item.selling && sellYesterday ? item.selling - sellYesterday : null;
 
+                // YENİ: Sürükle-bırak event'lerini sadece 'custom' sekmesinde ve 'editMode' aktifken ekle
+                const dragHandlers = isCustomTab && editMode ? `
+                    draggable="true"
+                    ondragstart="dragStart(event)" 
+                    ondragover="allowDrop(event)" 
+                    ondrop="dropItem(event)"
+                ` : 'draggable="false"'; // Diğer sekmelerde sürüklemeyi kapat
+
                 container.innerHTML += `
-        <div class="${colClass} mb-3" draggable="${editMode}" ondragstart="dragStart(event)" ondragover="allowDrop(event)" ondrop="dropItem(event)" data-key="${item.key}">
-            <div class="price-box ${editMode ? 'editing' : ''}" data-key="${item.key}">
-                <div class="remove-btn" onclick="removeCustom('${item.key}')">✖</div>
-                <div class="price-title">
-                    <span>${item.name}</span>
-                    <span class="change-badge ${getChangeClass(item.change)}">${item.change ? (item.change > 0 ? '+' : '') + item.change + '%' : '0%'}</span>
-                </div>
-                <div class="price-row">
-                    <div class="price-label">ALIŞ</div>
-                    <div class="${item.buying ? 'price-buy' : 'no-price'}">
-                        ${buyDiff !== null ? `<small style="color:${diffColor}; margin-right:5px">(${buyDiff >= 0 ? '+' : '-'}${formatPrice(Math.abs(buyDiff))}₺)</small>` : ''}
-                        ₺${formatPrice(item.buying)}
+            <div class="${colClass}" data-key="${item.key}" ${dragHandlers}> 
+                <div class="price-box ${isCustomTab && editMode ? 'editing' : ''}" data-key="${item.key}">
+                    
+                    <div class="remove-btn" onclick="removeCustom('${item.key}')">✖</div>
+                    <div class="price-title">
+                        <span>${item.name}</span>
+                        <span class="change-badge ${getChangeClass(item.change)}">${item.change ? (item.change > 0 ? '+' : '') + item.change + '%' : '0%'}</span>
+                    </div>
+                    <div class="price-row">
+                        <div class="price-label">ALIŞ</div>
+                        <div class="${item.buying ? 'price-buy' : 'no-price'}">
+                            ${buyDiff !== null && showDiffTL ? `<small style="color:${diffColor}; margin-right:5px">(${buyDiff >= 0 ? '+' : '-'}${formatPrice(Math.abs(buyDiff))}₺)</small>` : ''}
+                            ₺${formatPrice(item.buying)}
+                        </div>
+                    </div>
+                    <div class="price-row">
+                        <div class="price-label">SATIŞ</div>
+                        <div class="${item.selling ? 'price-sell' : 'no-price'}">
+                            ${sellDiff !== null && showDiffTL ? `<small style="color:${diffColor}; margin-right:5px">(${sellDiff >= 0 ? '+' : '-'}${formatPrice(Math.abs(sellDiff))}₺)</small>` : ''}
+                            ₺${formatPrice(item.selling)}
+                            
+                        </div>
                     </div>
                 </div>
-                <div class="price-row">
-                    <div class="price-label">SATIŞ</div>
-                    <div class="${item.selling ? 'price-sell' : 'no-price'}">
-                        ${sellDiff !== null ? `<small style="color:${diffColor}; margin-right:5px">(${sellDiff >= 0 ? '+' : '-'}${formatPrice(Math.abs(sellDiff))}₺)</small>` : ''}
-                        ₺${formatPrice(item.selling)}
-                       
-                    </div>
-                </div>
-            </div>
-        </div>`;
+            </div>`;
             });
         }
 
+        let showDiffTL = localStorage.getItem('showDiffTL') === 'true' || false;
+
+        document.getElementById('toggleDiffTL').addEventListener('click', (e) => {
+            e.preventDefault();
+            showDiffTL = !showDiffTL;
+            localStorage.setItem('showDiffTL', showDiffTL);
+            updateAllTabs();
+        });
         async function fetchRates() {
             try {
                 const [goldResp, currencyResp] = await Promise.all([fetch(goldAPI).then(r => r.json()), fetch(currencyAPI).then(r => r.json())]);
@@ -380,9 +411,17 @@
         }
         fetchRates();
         setInterval(fetchRates, 30000);
-
         function updateAllTabs() {
-            renderRates('customContainer', rates.filter(r => customRates.includes(r.key)));
+            // 1. customRates dizisindeki 'key' sırasına göre sıralanmış bir veri dizisi oluştur.
+            const sortedCustomData = customRates.map(key => {
+                // Ana 'rates' dizisinden bu key'e ait tam nesneyi bul
+                return rates.find(r => r.key === key);
+            }).filter(Boolean); // Eğer 'rates' içinde bulunamayan (eski/silinmiş) bir key varsa, onu filtrele.
+
+            // 2. 'customContainer'ı bu yeni sıralanmış dizi ile render et.
+            renderRates('customContainer', sortedCustomData);
+
+            // Diğer sekmeler eskisi gibi kalabilir
             renderRates('currencyContainer', rates.filter(r => r.type === 'currency'));
             renderRates('goldContainer', rates.filter(r => r.type === 'gold'));
         }
